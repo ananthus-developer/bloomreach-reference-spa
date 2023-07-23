@@ -21,7 +21,10 @@ import { Configuration, PageModel } from '@bloomreach/spa-sdk';
 import axios from 'axios';
 import { Container, Navbar, Image, Row, Col } from 'react-bootstrap';
 import { getCookieConsentValue } from 'react-cookie-consent';
-import { CommerceApiClientFactory, CommerceConnectorProvider } from '@bloomreach/connector-components-react';
+import {
+  CommerceApiClientFactory,
+  CommerceConnectorProvider,
+} from '@bloomreach/connector-components-react';
 import { Cookies, CookiesProvider } from 'react-cookie';
 import {
   BannerCollection,
@@ -54,6 +57,9 @@ import styles from './App.module.scss';
 import { Meta } from './Meta';
 import { CommerceConfig } from '../src/utils';
 import { BrPersonalization } from './BrPersonalization';
+import { Button } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 interface AppProps {
   configuration: Omit<Configuration, 'httpClient'>;
@@ -72,7 +78,9 @@ export function App({
   apolloState,
   cookies,
 }: AppProps): JSX.Element {
-  const [cookieConsentVal, setCookieConsentVal] = useState<boolean>(getCookieConsentValue() === 'true');
+  const [cookieConsentVal, setCookieConsentVal] = useState<boolean>(
+    getCookieConsentValue() === 'true'
+  );
   const mapping = {
     BannerCollection,
     BannerCTA,
@@ -111,16 +119,25 @@ export function App({
   const defaultAnonymousCredentials = undefined;
 
   const factory = useMemo(() => {
-    return commerceClientFactory ?? new CommerceApiClientFactory(
-      graphqlServiceUrl,
-      connector,
-      accountEnvId,
-      defaultRequestHeaders,
-      defaultAnonymousCredentials,
-      false,
+    return (
+      commerceClientFactory ??
+      new CommerceApiClientFactory(
+        graphqlServiceUrl,
+        connector,
+        accountEnvId,
+        defaultRequestHeaders,
+        defaultAnonymousCredentials,
+        false
+      )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [graphqlServiceUrl, connector, accountEnvId, defaultRequestHeaders, defaultAnonymousCredentials]);
+  }, [
+    graphqlServiceUrl,
+    connector,
+    accountEnvId,
+    defaultRequestHeaders,
+    defaultAnonymousCredentials,
+  ]);
 
   const reactCookies = cookies ? new Cookies(cookies) : undefined;
 
@@ -133,99 +150,131 @@ export function App({
         commerceClientFactory={factory}
         apolloState={apolloState}
       >
-        <CommerceContextProvider commerceConfig={commerceConfig} commerceClientFactory={factory}>
-          <BrPage configuration={{ ...configuration, httpClient: axios as any }} mapping={mapping} page={page}>
+        <CommerceContextProvider
+          commerceConfig={commerceConfig}
+          commerceClientFactory={factory}
+        >
+          <BrPage
+            configuration={{ ...configuration, httpClient: axios as any }}
+            mapping={mapping}
+            page={page}
+          >
             <BrPageContext.Consumer>
-              {(contextPage) => (<>
-                <Meta page={contextPage!} />
-                <header>
-                  <Navbar bg="light" expand="lg" sticky="top" className="py-2 py-lg-3">
-                    <Container className="justify-content-start px-sm-3">
-                      <Navbar.Brand as={Link} href={contextPage?.getUrl('/')} title="Pacific Nuts & Bolts">
-                        <Image
-                          alt="Pacific Nuts & Bolts"
-                          src="/logo.png"
-                          srcSet="/logo.png 1x, /logo@2x.png 2x"
-                          height="30"
-                          className="d-none d-sm-block"
-                        />
+              {(contextPage) => (
+                <>
+                  <Meta page={contextPage!} />
+                  <header>
+                    <Button variant="outlined">Click here</Button>
+                    <FontAwesomeIcon icon={faUser} />
+                    <Navbar
+                      bg="light"
+                      expand="lg"
+                      sticky="top"
+                      className="py-2 py-lg-3"
+                    >
+                      <Container className="justify-content-start px-sm-3">
+                        <Navbar.Brand
+                          as={Link}
+                          href={contextPage?.getUrl('/')}
+                          title="Pacific Nuts & Bolts"
+                        >
+                          <Image
+                            alt="Pacific Nuts & Bolts"
+                            src="/logo.png"
+                            srcSet="/logo.png 1x, /logo@2x.png 2x"
+                            height="30"
+                            className="d-none d-sm-block"
+                          />
 
-                        <Image
-                          alt="Pacific Nuts & Bolts"
-                          src="/logo-sm.png"
-                          srcSet="/logo-sm.png 1x, /logo-sm@2x.png 2x"
-                          height="30"
-                          className="d-block d-sm-none"
-                        />
-                        {getCookieConsentValue() && <BrPixel
-                          accountId={discoveryAccountId ?? ''}
-                          domainKey={discoveryDomainKey ?? ''}
-                          page={contextPage!}
-                          pageType="search"
-                          pageLabels="pacific,nut,bolt,commerce"
-                          type="pageview"
-                        />}
-                      </Navbar.Brand>
-                      {!contextPage?.getUrl()?.startsWith('/error') && (
-                        <>
-                          <BrComponent path="header">
-                            <div className={`${styles.navbar__container} order-lg-2 mr-3 mr-lg-0`}>
-                              <BrComponent />
-                            </div>
-                          </BrComponent>
-                          <Navbar.Toggle className="ml-auto" />
-                          <Navbar.Collapse className="order-lg-1 mr-lg-3">
-                            <BrComponent path="menu">
-                              <Menu />
+                          <Image
+                            alt="Pacific Nuts & Bolts"
+                            src="/logo-sm.png"
+                            srcSet="/logo-sm.png 1x, /logo-sm@2x.png 2x"
+                            height="30"
+                            className="d-block d-sm-none"
+                          />
+                          {getCookieConsentValue() && (
+                            <BrPixel
+                              accountId={discoveryAccountId ?? ''}
+                              domainKey={discoveryDomainKey ?? ''}
+                              page={contextPage!}
+                              pageType="search"
+                              pageLabels="pacific,nut,bolt,commerce"
+                              type="pageview"
+                            />
+                          )}
+                        </Navbar.Brand>
+                        {!contextPage?.getUrl()?.startsWith('/error') && (
+                          <>
+                            <BrComponent path="header">
+                              <div
+                                className={`${styles.navbar__container} order-lg-2 mr-3 mr-lg-0`}
+                              >
+                                <BrComponent />
+                              </div>
                             </BrComponent>
-                          </Navbar.Collapse>
-                        </>
-                      )}
+                            <Navbar.Toggle className="ml-auto" />
+                            <Navbar.Collapse className="order-lg-1 mr-lg-3">
+                              <BrComponent path="menu">
+                                <Menu />
+                              </BrComponent>
+                            </Navbar.Collapse>
+                          </>
+                        )}
+                      </Container>
+                    </Navbar>
+                  </header>
+                  <BrComponent path="top">
+                    <Container as="section" fluid>
+                      <BrComponent />
                     </Container>
-                  </Navbar>
-                </header>
-              <BrComponent path="top">
-                <Container as="section" fluid>
-                  <BrComponent />
-                </Container>
-              </BrComponent>
-              <Container as="section" className="flex-fill pt-4">
-                <Row className="flex-lg-nowrap">
-                  <BrComponent path="main">
-                    <Col xs="auto" className="flex-fill">
-                      <BrComponent />
-                    </Col>
                   </BrComponent>
-                  <BrComponent path="right">
-                    <Col lg="3" className="flex-fill py-lg-2">
-                      <BrComponent />
-                    </Col>
-                  </BrComponent>
-                </Row>
-              </Container>
-              <BrComponent path="bottom">
-                <Container as="section" fluid>
-                  <BrComponent />
-                </Container>
-              </BrComponent>
-              <BrComponent path="footer">
-                <footer className="bg-secondary text-light py-3">
-                  <Container>
-                    <Row>
-                      <Col lg="9" xl="10">
-                        <BrComponent />
-                      </Col>
-                      <Col lg="3" xl="2" className="text-center text-lg-right py-lg-2">
-                        &copy; Bloomreach 2023
-                      </Col>
+                  <Container as="section" className="flex-fill pt-4">
+                    <Row className="flex-lg-nowrap">
+                      <BrComponent path="main">
+                        <Col xs="auto" className="flex-fill">
+                          <BrComponent />
+                        </Col>
+                      </BrComponent>
+                      <BrComponent path="right">
+                        <Col lg="3" className="flex-fill py-lg-2">
+                          <BrComponent />
+                        </Col>
+                      </BrComponent>
                     </Row>
                   </Container>
-                  {!contextPage?.isPreview() && <BrCookieConsent csUpdate={updateCookieConsentVal} />}
-                  {!contextPage?.isPreview() && Boolean(cookieConsentVal)
-                    && <BrPersonalization path={configuration.path} />}
-                </footer>
-              </BrComponent>
-              </>)}
+                  <BrComponent path="bottom">
+                    <Container as="section" fluid>
+                      <BrComponent />
+                    </Container>
+                  </BrComponent>
+                  <BrComponent path="footer">
+                    <footer className="bg-secondary text-light py-3">
+                      <Container>
+                        <Row>
+                          <Col lg="9" xl="10">
+                            <BrComponent />
+                          </Col>
+                          <Col
+                            lg="3"
+                            xl="2"
+                            className="text-center text-lg-right py-lg-2"
+                          >
+                            &copy; Bloomreach 2023
+                          </Col>
+                        </Row>
+                      </Container>
+                      {!contextPage?.isPreview() && (
+                        <BrCookieConsent csUpdate={updateCookieConsentVal} />
+                      )}
+                      {!contextPage?.isPreview() &&
+                        Boolean(cookieConsentVal) && (
+                          <BrPersonalization path={configuration.path} />
+                        )}
+                    </footer>
+                  </BrComponent>
+                </>
+              )}
             </BrPageContext.Consumer>
           </BrPage>
         </CommerceContextProvider>

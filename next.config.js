@@ -14,10 +14,28 @@
  * limitations under the License.
  */
 
+const OverrideResolver = require('@bva/override-resolver');
+const path = require('path');
+
 module.exports = {
   reactStrictMode: true,
   eslint: {
     // Only run ESLint on these directories during production builds (next build)
     dirs: ['components', 'pages', 'src'],
+  },
+  webpack: (config) => {
+    config.resolve.plugins.push(
+      new OverrideResolver({
+        name: '@mui',
+        alias: path.resolve(__dirname, 'overrides', '@mui'),
+      })
+    );
+    config.resolve.plugins.push(
+      new OverrideResolver({
+        name: '@fortawesome',
+        alias: path.resolve(__dirname, 'overrides', '@fortawesome'),
+      })
+    );
+    return config;
   },
 };
